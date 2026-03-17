@@ -1,13 +1,71 @@
 import Navbar from "@/components/Navbar";
 import PropertyCard from "@/components/PropertyCard";
-import { featuredProperties, newProperties } from "@/lib/mockProperties";
+import PaginationControls from "@/components/PaginationControls";
+import { supabase, DbProperty } from "@/lib/supabase";
+import { Suspense } from "react";
 
-export default function Home() {
+const PAGE_SIZE = 6;
+
+// Map DB row → PropertyCard prop shape
+function toCardProperty(p: DbProperty) {
+  return {
+    id: p.slug,
+    title: p.title,
+    location: p.location,
+    price: p.price,
+    priceLabel: p.price_label ?? undefined,
+    beds: p.beds,
+    baths: p.baths,
+    area: p.area,
+    imageUrl: p.image_url,
+    tag: p.tag_text && p.tag_type
+      ? { text: p.tag_text, type: p.tag_type }
+      : undefined,
+  };
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
+  const currentPage = Math.max(1, Number(pageParam) || 1);
+  const from = (currentPage - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  // Fetch featured properties (no pagination)
+  const { data: featuredData, error: featuredError } = await supabase
+    .from("properties")
+    .select("*")
+    .eq("is_featured", true)
+    .order("created_at", { ascending: true });
+
+  // Fetch paginated "new in market" properties + count
+  const {
+    data: newData,
+    error: newError,
+    count,
+  } = await supabase
+    .from("properties")
+    .select("*", { count: "exact" })
+    .eq("is_featured", false)
+    .order("created_at", { ascending: true })
+    .range(from, to);
+
+  if (featuredError || newError) {
+    console.error("Supabase error:", featuredError || newError);
+  }
+
+  const featuredProperties = (featuredData ?? []).map(toCardProperty);
+  const newProperties = (newData ?? []).map(toCardProperty);
+  const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE);
+
   return (
     <>
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        
+
         {/* Hero Section */}
         <section className="py-12 md:py-16">
           <div className="max-w-3xl mx-auto text-center space-y-8">
@@ -21,16 +79,16 @@ export default function Home() {
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <span className="material-icons text-[#5C706D] text-2xl group-focus-within:text-[#006655] transition-colors">search</span>
               </div>
-              <input 
-                className="block w-full pl-12 pr-28 py-4 rounded-xl border-none bg-white dark:bg-white/5 text-[#19322F] dark:text-white shadow-soft placeholder:text-[#5C706D]/60 focus:ring-2 focus:ring-[#006655] focus:bg-white dark:focus:bg-white/10 transition-all text-lg outline-none" 
-                placeholder="Search by city, neighborhood, or address..." 
-                type="text" 
+              <input
+                className="block w-full pl-12 pr-28 py-4 rounded-xl border-none bg-white dark:bg-white/5 text-[#19322F] dark:text-white shadow-soft placeholder:text-[#5C706D]/60 focus:ring-2 focus:ring-[#006655] focus:bg-white dark:focus:bg-white/10 transition-all text-lg outline-none"
+                placeholder="Search by city, neighborhood, or address..."
+                type="text"
               />
               <button className="absolute inset-y-2 right-2 px-6 bg-[#006655] hover:bg-[#006655]/90 text-white font-medium rounded-lg transition-colors flex items-center justify-center shadow-lg shadow-[#006655]/20">
                 Search
               </button>
             </div>
-            
+
             {/* Filters */}
             <div className="flex items-center justify-center gap-3 overflow-x-auto hide-scroll py-2 px-4 -mx-4">
               <button className="whitespace-nowrap px-5 py-2 rounded-full bg-[#19322F] text-white text-sm font-medium shadow-lg shadow-[#19322F]/10 transition-transform hover:-translate-y-0.5">
@@ -80,17 +138,17 @@ export default function Home() {
               <button className="px-4 py-1.5 rounded-md text-sm font-medium text-[#5C706D] hover:text-[#19322F] dark:hover:text-white">Rent</button>
             </div>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {newProperties.map(property => (
               <PropertyCard key={property.id} property={property} variant="standard" />
             ))}
           </div>
-          
-          <div className="mt-12 text-center">
-            <button className="px-8 py-3 bg-white dark:bg-white/5 border border-[#19322F]/10 dark:border-white/10 hover:border-[#006655] hover:text-[#006655] text-[#19322F] dark:text-white font-medium rounded-lg transition-all hover:shadow-md">
-              Load more properties
-            </button>
-          </div>
+
+          {/* Server-side Pagination Controls */}
+          <Suspense>
+            <PaginationControls currentPage={currentPage} totalPages={totalPages} />
+          </Suspense>
         </section>
 
       </main>
