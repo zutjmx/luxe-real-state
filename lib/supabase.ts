@@ -19,5 +19,6 @@ export type DbProperty = {
   tag_text: string | null;
   tag_type: 'exclusive' | 'new' | 'sale' | 'rent' | null;
   is_featured: boolean;
+  images: string[];
   created_at: string;
 };

@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Property } from '@/lib/mockProperties';
 
 interface PropertyCardProps {
@@ -30,7 +33,7 @@ export default function PropertyCard({ property, variant = 'standard' }: Propert
 
   if (isFeatured) {
     return (
-      <div className="group relative rounded-xl overflow-hidden shadow-soft bg-white dark:bg-white/5 cursor-pointer">
+      <Link href={`/propiedades/${property.id}`} className="group relative rounded-xl overflow-hidden shadow-soft bg-white dark:bg-white/5 cursor-pointer block">
         <div className="aspect-[4/3] w-full overflow-hidden relative">
           <Image 
             src={property.imageUrl} 
@@ -43,7 +46,9 @@ export default function PropertyCard({ property, variant = 'standard' }: Propert
               {property.tag.text}
             </div>
           )}
-          <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center text-[#19322F] hover:bg-[#006655] hover:text-white transition-all z-10">
+          <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center text-[#19322F] hover:bg-[#006655] hover:text-white transition-all z-10"
+            onClick={(e) => e.preventDefault()}
+          >
             <span className="material-icons text-xl">favorite_border</span>
           </button>
           <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
@@ -73,12 +78,12 @@ export default function PropertyCard({ property, variant = 'standard' }: Propert
             </div>
           </div>
         </div>
-      </div>
+      </Link>
     );
   }
 
   return (
-    <article className="bg-white dark:bg-white/5 rounded-xl overflow-hidden shadow-card hover:shadow-soft transition-all duration-300 group cursor-pointer h-full flex flex-col">
+    <Link href={`/propiedades/${property.id}`} className="bg-white dark:bg-white/5 rounded-xl overflow-hidden shadow-card hover:shadow-soft transition-all duration-300 group cursor-pointer h-full flex flex-col block">
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image 
           src={property.imageUrl} 
@@ -86,7 +91,9 @@ export default function PropertyCard({ property, variant = 'standard' }: Propert
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        <button className="absolute top-3 right-3 p-2 bg-white/90 dark:bg-black/50 rounded-full hover:bg-[#006655] hover:text-white transition-colors text-[#19322F] z-10">
+        <button className="absolute top-3 right-3 p-2 bg-white/90 dark:bg-black/50 rounded-full hover:bg-[#006655] hover:text-white transition-colors text-[#19322F] z-10"
+          onClick={(e) => e.preventDefault()}
+        >
           <span className="material-icons text-lg">favorite_border</span>
         </button>
         {property.tag && (
@@ -116,6 +123,6 @@ export default function PropertyCard({ property, variant = 'standard' }: Propert
           </div>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
