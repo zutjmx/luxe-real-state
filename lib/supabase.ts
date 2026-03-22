@@ -15,7 +15,6 @@ export type DbProperty = {
   beds: number;
   baths: number;
   area: number;
-  image_url: string;
   tag_text: string | null;
   tag_type: 'exclusive' | 'new' | 'sale' | 'rent' | null;
   is_featured: boolean;

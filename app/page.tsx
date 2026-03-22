@@ -17,7 +17,7 @@ function toCardProperty(p: DbProperty) {
     beds: p.beds,
     baths: p.baths,
     area: p.area,
-    imageUrl: p.image_url,
+    images: p.images || [],
     tag: p.tag_text && p.tag_type
       ? { text: p.tag_text, type: p.tag_type }
       : undefined,

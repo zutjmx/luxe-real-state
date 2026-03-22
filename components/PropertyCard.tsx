@@ -36,7 +36,7 @@ export default function PropertyCard({ property, variant = 'standard' }: Propert
       <Link href={`/propiedades/${property.id}`} className="group relative rounded-xl overflow-hidden shadow-soft bg-white dark:bg-white/5 cursor-pointer block">
         <div className="aspect-[4/3] w-full overflow-hidden relative">
           <Image 
-            src={property.imageUrl} 
+            src={property.images?.[0] || 'https://via.placeholder.com/800x600?text=No+Image'} 
             alt={property.title} 
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -86,7 +86,7 @@ export default function PropertyCard({ property, variant = 'standard' }: Propert
     <Link href={`/propiedades/${property.id}`} className="bg-white dark:bg-white/5 rounded-xl overflow-hidden shadow-card hover:shadow-soft transition-all duration-300 group cursor-pointer h-full flex flex-col block">
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image 
-          src={property.imageUrl} 
+          src={property.images?.[0] || 'https://via.placeholder.com/800x600?text=No+Image'} 
           alt={property.title} 
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"

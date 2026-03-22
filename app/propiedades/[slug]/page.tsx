@@ -34,7 +34,7 @@ export async function generateMetadata(
     title: `${property.title} | LuxeEstate`,
     description: `Stunning property in ${property.location} available now for ${formatPrice(property.price)}.`,
     openGraph: {
-      images: [property.image_url],
+      images: property.images || [],
     },
   };
 }
@@ -63,11 +63,13 @@ export default async function PropertyDetailsPage({ params }: Props) {
 
   const property = data as DbProperty;
   
-  // Combine single image and multiple images for the gallery
-  const galleryImages = [property.image_url, ...(property.images || [])];
-  // Ensure we have at least 4 images to make the UI look good (fallback to main if empty)
+  // Ensure we have at least 4 images to make the UI look good
+  const galleryImages = property.images && property.images.length > 0 
+    ? [...property.images] 
+    : ['https://via.placeholder.com/800x600?text=No+Image'];
+
   while (galleryImages.length < 4) {
-    galleryImages.push(property.image_url);
+    galleryImages.push('https://via.placeholder.com/800x600?text=Placeholder');
   }
 
   return (

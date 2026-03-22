@@ -42,8 +42,8 @@ export default async function AdminPropertiesPage() {
                     <td className="px-6 py-4 min-w-[300px]">
                       <div className="flex items-center gap-4">
                         <div className="h-12 w-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                          {property.image_url ? (
-                            <img src={property.image_url} alt={property.title} className="h-full w-full object-cover" />
+                          {property.images && property.images.length > 0 ? (
+                            <img src={property.images[0]} alt={property.title} className="h-full w-full object-cover" />
                           ) : (
                             <span className="material-icons text-gray-400 place-self-center mt-3">image</span>
                           )}
